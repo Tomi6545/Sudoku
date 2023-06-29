@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include "ui_sudoku.h"
 #include "cmath"
+#include "set"
 
 
 class Sudoku : public QMainWindow
@@ -42,6 +43,7 @@ private:
     std::unordered_map<int, char> missing;
     int currentPlayer = 0;
     int selectedField = -1;
+    std::set<char> previousGuesses;
     char guess = ' ';
     bool finished = false;
 

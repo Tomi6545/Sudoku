@@ -99,21 +99,26 @@ void Sudoku::handleTurn() {
         return;
     }
 
-    fields.at(selectedField) = guess;
-    int status = isOptimal(selectedField, guess);
-    std::vector<char> allowed = getAllowedCharacters();
-    long score = std::find(allowed.begin(), allowed.end(), guess) - allowed.begin() + 1;
+    bool allowGuess = previousGuesses.find(guess) == previousGuesses.end();
+    if(allowGuess) {
+        fields.at(selectedField) = guess;
+        previousGuesses.insert(guess);
+    }
 
-    selectedField = -1;
-    guess = ' ';
-
+    int status = !allowGuess ? -1 : isOptimal(selectedField, guess);
+    //guess nicht gültig ist oder nicht optimal
     if(status != 1) {
         //Spieler hat nicht die richtige Lösung gewählt, wechseln
         ++currentPlayer %= playerList.size();
+        previousGuesses.clear();
     } else {
         //Score hinzufügen
+        std::vector<char> allowed = getAllowedCharacters();
+        long score = std::find(allowed.begin(), allowed.end(), guess) - allowed.begin() + 1;
         players.at(currentPlayer).score += score;
     }
+    selectedField = -1;
+    guess = ' ';
     updateVisual();
 
     //Checke ob Spiel zuende
