@@ -66,7 +66,6 @@ Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(pa
     createSolution();
 
     // Speichern der Highscores
-    std::vector<Player> playerVector(players, players + playerCount); // Konvertiere Array in einen Vektor
     //saveHighscore(playerVector, "highscores.bin");
 }
 
