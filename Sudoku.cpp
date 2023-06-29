@@ -223,8 +223,8 @@ void Sudoku::createSolution() {
     }
 
     complete(1);
-    //TODO maxDelete
-    int maxDelete = difficulty * gridSize() + gridSize();
+    //difficulty 4 = Extreme (maximal mögliche Anzahl löschen)
+    int maxDelete = difficulty >= 4 ? size : (difficulty+1) * gridSize();
     std::set<int> deleted;
     while(true) {
         int rnd = std::rand() % size;
