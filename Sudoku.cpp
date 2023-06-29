@@ -70,9 +70,11 @@ Sudoku::Sudoku(int size, int difficulty, QStringList nameList, QWidget *parent) 
 }
 
 void Sudoku::onTableClicked(const QModelIndex &index) {
+    if(finished) {
+        return;
+    }
     int pos = index.row() * this->gridSize() + index.column();
     if(missing.find(pos) != missing.end() && missing.at(pos) != fields.at(pos)) {
-        std::cout << "clicked: row=" << index.row() << " coloumn=" << index.column() << " -> pos=" << selectedField << std::endl;
         guess = ' ';
         selectedField = pos;
     }
@@ -80,14 +82,13 @@ void Sudoku::onTableClicked(const QModelIndex &index) {
 }
 
 void Sudoku::keyPressEvent(QKeyEvent *event) {
-    if(event->count() != 1) {
+    if(event->count() != 1 || finished) {
         return;
     }
     char c = char(event->key());
     std::vector<char> allowed = getAllowedCharacters();
     if(std::find(allowed.begin(), allowed.end(), c) != allowed.end()) {
         guess = c;
-        std::cout << "pressed " << c << std::endl;
     }
     this->handleTurn();
 }
@@ -114,6 +115,20 @@ void Sudoku::handleTurn() {
         players.at(currentPlayer).score += score;
     }
     updateVisual();
+
+    //Checke ob Spiel zuende
+    for(std::pair<int,char> iterator : missing) {
+        if(fields.at(iterator.first) != iterator.second) {
+            return;
+        }
+    }
+
+    //Spiel zuende
+    finished = true;
+    for(int i = 0; i < this->size; i++) {
+        SudokuPos pos = getPos(i);
+        sudokuTable->item(pos.row, pos.column)->setBackgroundColor(QColor(154,	185, 115));
+    }
 }
 
 

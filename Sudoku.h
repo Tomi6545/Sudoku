@@ -43,6 +43,7 @@ private:
     int currentPlayer = 0;
     int selectedField = -1;
     char guess = ' ';
+    bool finished = false;
 
     [[nodiscard]] int gridSize() const {
         return sqrt(size);
