@@ -80,7 +80,7 @@ void Sudoku::onTableClicked(const QModelIndex &index) {
         return;
     }
     int pos = index.row() * this->gridSize() + index.column();
-    if(missing.find(pos) != missing.end()) {
+    if(missing.find(pos) != missing.end() && missing.at(pos) != fields.at(pos)) {
         guess = ' ';
         selectedField = pos;
     }
@@ -224,7 +224,7 @@ void Sudoku::createSolution() {
 
     complete(1);
     //TODO maxDelete
-    int maxDelete = 40;
+    int maxDelete = difficulty * gridSize() + gridSize();
     std::set<int> deleted;
     while(true) {
         int rnd = std::rand() % size;
