@@ -60,6 +60,37 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="difficultyLabel">
+        <property name="text">
+         <string>Select Difficulty</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="difficultyComboBox">
+        <item>
+         <property name="text">
+          <string>Easy</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Normal</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hard</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Extreme</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="numPlayersLabel">
         <property name="text">
          <string>Pick Player Names divided by ,   (up to 4 Players are possbile)</string>
@@ -68,16 +99,6 @@
       </item>
       <item>
        <widget class="QLineEdit" name="nameInput"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="errorLabel">
-        <property name="styleSheet">
-         <string notr="true">color=rgb(239, 41, 41)</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
       </item>
       <item>
        <spacer name="verticalSpacer">
@@ -91,6 +112,16 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="errorLabel">
+        <property name="styleSheet">
+         <string notr="true">color=rgb(239, 41, 41)</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="startButton">

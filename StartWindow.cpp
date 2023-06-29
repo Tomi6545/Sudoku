@@ -44,9 +44,10 @@ StartWindow::~StartWindow()
         }
         QStringList nameList = inputText.split(',',QString::SkipEmptyParts);
 
+        int difficulty = ui->difficultyComboBox->currentIndex() + 1;
 
         //Sudoku-Fenster
-        Sudoku* sudoku = new Sudoku(size, nameList);
+        Sudoku* sudoku = new Sudoku(size, difficulty, nameList);
         sudoku->move(pos());
         hide();
         sudoku->show();

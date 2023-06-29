@@ -12,7 +12,7 @@ class Sudoku : public QMainWindow
 Q_OBJECT
 
 public:
-    explicit Sudoku(int size, QStringList nameList, QWidget *parent = nullptr);
+    explicit Sudoku(int size, int difficulty, QStringList nameList, QWidget *parent = nullptr);
     struct Player{
         QString name;
         int score;
@@ -37,6 +37,7 @@ private:
 
     std::vector<Player> players;
     const int size;
+    const int difficulty;
     std::vector<char> fields;
     std::unordered_map<int, char> missing;
     int currentPlayer = 0;

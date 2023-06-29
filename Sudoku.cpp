@@ -12,8 +12,8 @@
 #include "set"
 #include <QKeyEvent>
 
-Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(parent),
-                                                                  ui(new Ui::SudokuClass), size(size*size) {
+Sudoku::Sudoku(int size, int difficulty, QStringList nameList, QWidget *parent) : QMainWindow(parent),
+                                                                  ui(new Ui::SudokuClass), size(size*size), difficulty(difficulty) {
     ui->setupUi(this);
 
     sudokuTable = ui->sudokuTable;
@@ -198,7 +198,7 @@ void Sudoku::createSolution() {
 
     complete(1);
     //TODO maxDelete
-    int maxDelete = 40;
+    int maxDelete = difficulty * gridSize() + gridSize();
     std::set<int> deleted;
     while(true) {
         int rnd = std::rand() % size;
