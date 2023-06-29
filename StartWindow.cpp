@@ -1,8 +1,6 @@
 //
 // Created by 21caog1bif on 16.06.23.
 //
-
-#include "StartWindow.h"
 #include "ui_startwindow.h"
 #include "Sudoku.h"
 
@@ -20,6 +18,8 @@ StartWindow::~StartWindow()
 {
     delete ui;
 }
+
+
     void StartWindow::on_Start_clicked()
     {
         ui->errorLabel->clear();
@@ -47,7 +47,7 @@ StartWindow::~StartWindow()
         int difficulty = ui->difficultyComboBox->currentIndex() + 1;
 
         //Sudoku-Fenster
-        Sudoku* sudoku = new Sudoku(size, difficulty, nameList);
+        Sudoku* sudoku = new Sudoku(size, difficulty, nameList, this);
         sudoku->move(pos());
         hide();
         sudoku->show();

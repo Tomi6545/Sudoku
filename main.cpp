@@ -1,4 +1,4 @@
-#include "Sudoku.h"
+
 #include "StartWindow.h"
 #include <QtWidgets/QApplication>
 

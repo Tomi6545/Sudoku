@@ -1,3 +1,4 @@
+#pragma once
 //
 // Created by 21caog1bif on 16.06.23.
 //
@@ -20,6 +21,8 @@ public:
 
 private:
     Ui::StartWindow *ui;
+
+
 
 private slots:
     void on_Start_clicked();

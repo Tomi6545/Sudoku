@@ -1,18 +1,13 @@
-#include <QGridLayout>
 #include <QLineEdit>
-#include <QLabel>
 #include <QHeaderView>
 #include <QFile>
-#include <QTextStream>
-#include <iostream>
 #include <random>
 #include "Sudoku.h"
-#include "fileManager.h"
 #include "cmath"
 #include "set"
 #include <QKeyEvent>
 
-Sudoku::Sudoku(int size, int difficulty, QStringList nameList, QWidget *parent) : QMainWindow(parent),
+Sudoku::Sudoku(int size, int difficulty, QStringList nameList, StartWindow* startWindow, QWidget *parent) : QMainWindow(parent),
                                                                   ui(new Ui::SudokuClass), size(size*size), difficulty(difficulty) {
     ui->setupUi(this);
 
@@ -22,6 +17,9 @@ Sudoku::Sudoku(int size, int difficulty, QStringList nameList, QWidget *parent) 
     int gridSize = this->gridSize();
 
 
+    ui->restartButton->setVisible(false);
+    ui->restartButton->setDisabled(true);
+    connect(ui->restartButton, &QPushButton::clicked, this, &Sudoku::on_Restart_clicked);
 
     QFont font;
     font.setPointSize(12);
@@ -33,14 +31,8 @@ Sudoku::Sudoku(int size, int difficulty, QStringList nameList, QWidget *parent) 
     sudokuTable->setRowCount(gridSize); //auf size anpassen
     sudokuTable->setColumnCount(gridSize);
     sudokuTable->horizontalHeader()->setVisible(false);
-    sudokuTable->horizontalHeader()->setMinimumSectionSize(10);
-    sudokuTable->horizontalHeader()->setDefaultSectionSize(32);
-    sudokuTable->horizontalHeader()->setHighlightSections(false);
     sudokuTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     sudokuTable->verticalHeader()->setVisible(false);
-    sudokuTable->verticalHeader()->setMinimumSectionSize(10);
-    sudokuTable->verticalHeader()->setDefaultSectionSize(32);
-    sudokuTable->verticalHeader()->setHighlightSections(false);
     sudokuTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     sudokuTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     sudokuTable->setFocusPolicy(Qt::NoFocus);
@@ -140,6 +132,8 @@ void Sudoku::handleTurn() {
         SudokuPos pos = getPos(i);
         sudokuTable->item(pos.row, pos.column)->setBackgroundColor(QColor(154,	185, 115));
     }
+    ui->restartButton->setVisible(true);
+    ui->restartButton->setDisabled(false);
 }
 
 
@@ -386,5 +380,12 @@ int Sudoku::isOptimal(int pos, char guess) const {
         }
     }
 }
+
+void Sudoku::on_Restart_clicked(){
+    startWindow->show();
+    close();
+}
+
+
 
 
