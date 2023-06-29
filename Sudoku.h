@@ -25,7 +25,8 @@ public:
 
 public slots:
     void addPlayer(const QString& name);
-    void updateScore(const QString& name, int score);
+    //void updateScore(const QString& name, int score);
+    void updateScore(QString &name, char input);
     void onTableClicked(const QModelIndex &index);
     void keyPressEvent(QKeyEvent *event) override;
 

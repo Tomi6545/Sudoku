@@ -131,15 +131,27 @@ void Sudoku::addPlayer(const QString& name){
     playerTable->repaint();
 }
 
-void Sudoku::updateScore(const QString& name, int score){
+int charToHexValue(char c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c - 'A' + 10;
+    } else if (c >= 'a' && c <= 'z') {
+        return c - 'a' + 10;
+    } else if (c >= '1' && c <= '9') {
+        return c - '0';
+    } else {
+        return -1;
+    }
+}
+
+void Sudoku::updateScore(QString &name, char input) {
+    int value = charToHexValue(input);
     for (int i = 0; i < playerList.size(); ++i) {
         if (playerList[i].name == name) {
-            playerList[i].score = score;
-            QTableWidgetItem* scoreItem = playerTable->item(i, 1);
-            if (scoreItem) {
-                scoreItem->setText(QString::number(score));
-            }
-            break;
+            playerList[i].score += value;
+        }
+        QTableWidgetItem* scoreItem = playerTable->item(i, 1);
+        if (scoreItem) {
+            scoreItem->setText(QString::number(playerList[i].score));
         }
     }
 }
