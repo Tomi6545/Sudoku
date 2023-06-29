@@ -45,7 +45,10 @@ Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(pa
     sudokuTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     sudokuTable->setFocusPolicy(Qt::NoFocus);
     sudokuTable->setSelectionMode(QAbstractItemView::NoSelection);
-
+    for(int i = 0; i < this->size; i++) {
+        SudokuPos pos = getPos(i);
+        sudokuTable->setItem(pos.row, pos.column, new QTableWidgetItem());
+    }
     QTableWidget::connect(sudokuTable, &QTableWidget::clicked, this, &Sudoku::onTableClicked);
 
     // Schleife zur Initialisierung der Spieler in Playerlist
@@ -166,7 +169,7 @@ void Sudoku::updateVisual() {
         SudokuPos pos = this->getPos(i);
         char current = fields.at(i);
         //TODO bessere umwandlung zu QString ?
-        QTableWidgetItem *entry = new QTableWidgetItem(QString::fromStdString(std::string(1, current)));
+        QTableWidgetItem *entry = sudokuTable->item(pos.row, pos.column);
         if(i == selectedField) {
             entry->setBackgroundColor(QColor(0, 102, 255));
         } else if(current != ' ' && missing.find(i) != missing.end()) {
@@ -179,8 +182,8 @@ void Sudoku::updateVisual() {
                 entry->setBackgroundColor(QColor(200,0,0));
             }
         }
+        entry->setText(QString::fromStdString(std::string(1, current)));
         entry->setTextAlignment(Qt::AlignCenter);
-        sudokuTable->setItem(pos.row, pos.column, entry);
     }
     ui->currentName->setText(playerList[currentPlayer].name);
 }
