@@ -49,6 +49,12 @@ Sudoku::Sudoku(int size, int difficulty, QStringList nameList, QWidget *parent) 
         SudokuPos pos = getPos(i);
         sudokuTable->setItem(pos.row, pos.column, new QTableWidgetItem());
     }
+
+    //TODO Trennlinien dicker machen
+    QString styleSheet = QString("QHeaderView::section:nth-child(%1n) { border-width: 5px; }").arg(blockSize());
+    sudokuTable->horizontalHeader()->setStyleSheet(styleSheet);
+
+
     QTableWidget::connect(sudokuTable, &QTableWidget::clicked, this, &Sudoku::onTableClicked);
 
     // Schleife zur Initialisierung der Spieler in Playerlist
@@ -74,7 +80,7 @@ void Sudoku::onTableClicked(const QModelIndex &index) {
         return;
     }
     int pos = index.row() * this->gridSize() + index.column();
-    if(missing.find(pos) != missing.end() && missing.at(pos) != fields.at(pos)) {
+    if(missing.find(pos) != missing.end()) {
         guess = ' ';
         selectedField = pos;
     }
@@ -213,7 +219,7 @@ void Sudoku::createSolution() {
 
     complete(1);
     //TODO maxDelete
-    int maxDelete = difficulty * gridSize() + gridSize();
+    int maxDelete = 40;
     std::set<int> deleted;
     while(true) {
         int rnd = std::rand() % size;
