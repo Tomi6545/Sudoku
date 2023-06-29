@@ -37,6 +37,7 @@ private:
     QTableWidget* playerTable;
     QList<Player> playerList;
 
+    std::vector<Player> players;
     const int size;
     std::vector<char> fields;
     std::unordered_map<int, char> missing;

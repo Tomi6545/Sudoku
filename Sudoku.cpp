@@ -49,10 +49,11 @@ Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(pa
     QTableWidget::connect(sudokuTable, &QTableWidget::clicked, this, &Sudoku::onTableClicked);
 
     // Schleife zur Initialisierung der Spieler in Playerlist
-    Player players[playerCount];
     for (int i = 0; i < playerCount; i++){
-        players[i].name = nameList.value(i);
-        players[i].score = 0;
+        Player p;
+        p.name = nameList.value(i);
+        p.score = 0;
+        players.push_back(p);
     }
 
     //Schleife zum Hinzufügen der Spieler in die playerTable
@@ -100,6 +101,8 @@ void Sudoku::handleTurn() {
 
     fields.at(selectedField) = guess;
     int status = isOptimal(selectedField, guess);
+    std::vector<char> allowed = getAllowedCharacters();
+    long score = std::find(allowed.begin(), allowed.end(), guess) - allowed.end();
 
     selectedField = -1;
     guess = ' ';
@@ -107,6 +110,9 @@ void Sudoku::handleTurn() {
     if(status != 1) {
         //Spieler hat nicht die richtige Lösung gewählt, wechseln
         ++currentPlayer %= playerList.size();
+    } else {
+        //Score hinzufügen
+        players.at(currentPlayer).score += score;
     }
     updateVisual();
 }
