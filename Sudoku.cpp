@@ -71,7 +71,7 @@ Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(pa
 
 void Sudoku::onTableClicked(const QModelIndex &index) {
     int pos = index.row() * this->gridSize() + index.column();
-    if(missing.find(pos) != missing.end()) {
+    if(missing.find(pos) != missing.end() && missing.at(pos) != fields.at(pos)) {
         std::cout << "clicked: row=" << index.row() << " coloumn=" << index.column() << " -> pos=" << selectedField << std::endl;
         guess = ' ';
         selectedField = pos;
@@ -101,7 +101,7 @@ void Sudoku::handleTurn() {
     fields.at(selectedField) = guess;
     int status = isOptimal(selectedField, guess);
     std::vector<char> allowed = getAllowedCharacters();
-    long score =  allowed.end() - std::find(allowed.begin(), allowed.end(), guess);
+    long score = std::find(allowed.begin(), allowed.end(), guess) - allowed.begin() + 1;
 
     selectedField = -1;
     guess = ' ';
