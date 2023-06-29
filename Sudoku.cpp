@@ -101,7 +101,7 @@ void Sudoku::handleTurn() {
     fields.at(selectedField) = guess;
     int status = isOptimal(selectedField, guess);
     std::vector<char> allowed = getAllowedCharacters();
-    long score = std::find(allowed.begin(), allowed.end(), guess) - allowed.end();
+    long score =  allowed.end() - std::find(allowed.begin(), allowed.end(), guess);
 
     selectedField = -1;
     guess = ' ';
@@ -176,6 +176,8 @@ void Sudoku::updateVisual() {
             } else {
                 entry->setBackgroundColor(QColor(200,0,0));
             }
+        } else {
+            entry->setBackgroundColor(QColor(255,255,255));
         }
         entry->setText(QString::fromStdString(std::string(1, current)));
         entry->setTextAlignment(Qt::AlignCenter);
