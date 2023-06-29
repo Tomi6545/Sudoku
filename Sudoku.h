@@ -26,7 +26,8 @@ public:
 public slots:
     void addPlayer(const QString& name);
     void updateScore(const QString& name, int score);
-    void showCurrentName(const QString &name);
+    void onTableClicked(const QModelIndex &index);
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     Ui::SudokuClass *ui;
@@ -37,6 +38,10 @@ private:
 
     const int size;
     std::vector<char> fields;
+    std::unordered_map<int, char> missing;
+    int currentPlayer = 0;
+    int selectedField = -1;
+    char guess = ' ';
 
     [[nodiscard]] int gridSize() const {
         return sqrt(size);
@@ -71,12 +76,14 @@ private:
         return allowed;
     }
 
+    void handleTurn();
     void updateVisual();
     void createSolution();
     void initalizeBlock(int pos);
     int complete(int maxSolutions);
     [[nodiscard]] int findFree() const;
     [[nodiscard]] bool isPossible(int pos, char guess) const;
+    [[nodiscard]] int isOptimal(int pos, char guess) const;
 };
 
 #endif // SUDOKU_H

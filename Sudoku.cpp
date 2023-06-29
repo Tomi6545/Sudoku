@@ -10,6 +10,7 @@
 #include "fileManager.h"
 #include "cmath"
 #include "set"
+#include <QKeyEvent>
 
 Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(parent),
                                                                   ui(new Ui::SudokuClass), size(size*size) {
@@ -41,9 +42,11 @@ Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(pa
     sudokuTable->verticalHeader()->setDefaultSectionSize(32);
     sudokuTable->verticalHeader()->setHighlightSections(false);
     sudokuTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    sudokuTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    sudokuTable->setFocusPolicy(Qt::NoFocus);
+    sudokuTable->setSelectionMode(QAbstractItemView::NoSelection);
 
-    //Initalisieren des Felds
-    createSolution();
+    QTableWidget::connect(sudokuTable, &QTableWidget::clicked, this, &Sudoku::onTableClicked);
 
     // Schleife zur Initialisierung der Spieler in Playerlist
     Player players[playerCount];
@@ -51,17 +54,61 @@ Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(pa
         players[i].name = nameList.value(i);
         players[i].score = 0;
     }
+
     //Schleife zum Hinzufügen der Spieler in die playerTable
     for (int i = 0; i < playerCount; i++) {
         QString playerName = nameList.value(i);
         addPlayer(playerName);
     }
-    showCurrentName(players[0].name);
+
+    //Initalisieren des Felds
+    createSolution();
 
     // Speichern der Highscores
     std::vector<Player> playerVector(players, players + playerCount); // Konvertiere Array in einen Vektor
     //saveHighscore(playerVector, "highscores.bin");
+}
 
+void Sudoku::onTableClicked(const QModelIndex &index) {
+    int pos = index.row() * this->gridSize() + index.column();
+    if(missing.find(pos) != missing.end()) {
+        std::cout << "clicked: row=" << index.row() << " coloumn=" << index.column() << " -> pos=" << selectedField << std::endl;
+        guess = ' ';
+        selectedField = pos;
+    }
+    this->handleTurn();
+}
+
+void Sudoku::keyPressEvent(QKeyEvent *event) {
+    if(event->count() != 1) {
+        return;
+    }
+    char c = char(event->key());
+    std::vector<char> allowed = getAllowedCharacters();
+    if(std::find(allowed.begin(), allowed.end(), c) != allowed.end()) {
+        guess = c;
+        std::cout << "pressed " << c << std::endl;
+    }
+    this->handleTurn();
+}
+
+void Sudoku::handleTurn() {
+    if(selectedField == -1 || guess == ' ') {
+        updateVisual();
+        return;
+    }
+
+    fields.at(selectedField) = guess;
+    int status = isOptimal(selectedField, guess);
+
+    selectedField = -1;
+    guess = ' ';
+
+    if(status != 1) {
+        //Spieler hat nicht die richtige Lösung gewählt, wechseln
+        ++currentPlayer %= playerList.size();
+    }
+    updateVisual();
 }
 
 
@@ -97,20 +144,28 @@ void Sudoku::updateScore(const QString& name, int score){
     }
 }
 
-void Sudoku::showCurrentName(const QString& name){
-    ui->currentName->setText(name);
-
-}
-
-
 void Sudoku::updateVisual() {
     for(int i = 0; i < size; i++) {
         SudokuPos pos = this->getPos(i);
+        char current = fields.at(i);
         //TODO bessere umwandlung zu QString ?
-        QTableWidgetItem *entry = new QTableWidgetItem(QString::fromStdString(std::string(1, fields.at(i))));
+        QTableWidgetItem *entry = new QTableWidgetItem(QString::fromStdString(std::string(1, current)));
+        if(i == selectedField) {
+            entry->setBackgroundColor(QColor(0, 102, 255));
+        } else if(current != ' ' && missing.find(i) != missing.end()) {
+            int status = isOptimal(i, fields.at(i));
+            if(status == 1) {
+                entry->setBackgroundColor(QColor(0,200,50));
+            } else if(status == 0) {
+                entry->setBackgroundColor(QColor(255,255,0));
+            } else {
+                entry->setBackgroundColor(QColor(200,0,0));
+            }
+        }
         entry->setTextAlignment(Qt::AlignCenter);
         sudokuTable->setItem(pos.row, pos.column, entry);
     }
+    ui->currentName->setText(playerList[currentPlayer].name);
 }
 
 
@@ -136,7 +191,8 @@ void Sudoku::createSolution() {
         for(int iterator : deleted) {
             fields.at(iterator) = ' ';
         }
-        char tmp = fields.at(rnd);
+
+        missing.insert(std::pair(rnd, fields.at(rnd)));
         fields.at(rnd) = ' ';
         deleted.insert(rnd);
 
@@ -147,7 +203,10 @@ void Sudoku::createSolution() {
         for(int iterator : deleted) {
             fields.at(iterator) = ' ';
         }
-        fields.at(rnd) = tmp;
+
+        //Letzte Änderung rückgängig machen damit wieder eindeutig
+        fields.at(rnd) = missing.at(rnd);
+        missing.erase(rnd);
         break;
     }
 
@@ -271,4 +330,17 @@ bool Sudoku::isPossible(int pos, char guess) const {
     }
     return true;
 }
+
+int Sudoku::isOptimal(int pos, char guess) const {
+    if(guess != ' ' && missing.find(pos) != missing.end()) {
+        if(missing.at(pos) == fields.at(pos)) {
+            return 1;
+        } else if(isPossible(pos, fields.at(pos))) {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+}
+
 
