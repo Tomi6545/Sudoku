@@ -57,16 +57,13 @@ Sudoku::Sudoku(int size, QStringList nameList, QWidget *parent) : QMainWindow(pa
     }
 
     //Schleife zum Hinzufügen der Spieler in die playerTable
-    for (int i = 0; i < playerCount; i++) {
+     for (int i = 0; i < playerCount; i++) {
         QString playerName = nameList.value(i);
         addPlayer(playerName);
     }
 
     //Initalisieren des Felds
     createSolution();
-
-    // Speichern der Highscores
-    //saveHighscore(playerVector, "highscores.bin");
 }
 
 void Sudoku::onTableClicked(const QModelIndex &index) {
@@ -148,16 +145,14 @@ int charToHexValue(char c) {
     }
 }
 
-void Sudoku::updateScore(QString &name, char input) {
-    int value = charToHexValue(input);
-    for (int i = 0; i < playerList.size(); ++i) {
-        if (playerList[i].name == name) {
-            playerList[i].score += value;
-        }
-        QTableWidgetItem* scoreItem = playerTable->item(i, 1);
-        if (scoreItem) {
-            scoreItem->setText(QString::number(playerList[i].score));
-        }
+void Sudoku::updateScore(const std::vector<Player>& players, QTableWidget* playerTable) {
+
+    for (int row = 0; row < players.size(); ++row) {
+        const Player& player = players[row];
+
+        QTableWidgetItem* scoreItem = new QTableWidgetItem(QString::number(player.score));
+
+        playerTable->setItem(row, 1, scoreItem);
     }
 }
 
@@ -183,6 +178,7 @@ void Sudoku::updateVisual() {
         sudokuTable->setItem(pos.row, pos.column, entry);
     }
     ui->currentName->setText(playerList[currentPlayer].name);
+    updateScore(players, playerTable);
 }
 
 

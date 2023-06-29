@@ -25,8 +25,6 @@ public:
 
 public slots:
     void addPlayer(const QString& name);
-    //void updateScore(const QString& name, int score);
-    void updateScore(QString &name, char input);
     void onTableClicked(const QModelIndex &index);
     void keyPressEvent(QKeyEvent *event) override;
 
@@ -86,6 +84,8 @@ private:
     [[nodiscard]] int findFree() const;
     [[nodiscard]] bool isPossible(int pos, char guess) const;
     [[nodiscard]] int isOptimal(int pos, char guess) const;
+
+    void updateScore(const std::vector<Player> &players, QTableWidget *playerTable);
 };
 
 #endif // SUDOKU_H
