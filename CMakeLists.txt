@@ -12,7 +12,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 # Füge die erforderlichen Qt-Module zu deinem Ziel hinzu
-add_executable(Sudoku main.cpp Sudoku.cpp Sudoku.h startwindow.ui StartWindow.cpp StartWindow.h sudoku.ui fileManager.cpp fileManager.h)
+add_executable(Sudoku main.cpp Sudoku.cpp Sudoku.h startwindow.ui StartWindow.cpp StartWindow.h sudoku.ui)
 target_link_libraries(Sudoku PRIVATE Qt5::Core Qt5::Widgets)
 
 #Teilnehmer: 21caog1bif  21gath1bif
