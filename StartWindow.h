@@ -15,17 +15,14 @@ Q_OBJECT
 
 public:
     explicit StartWindow(QWidget *parent = Q_NULLPTR);
-    ~StartWindow();
-
-    void DisplayGrid();
+    ~StartWindow() override;
 
 private:
     Ui::StartWindow *ui;
 
 
-
 private slots:
-    void on_Start_clicked();
+    void startClicked();
 
 };
 

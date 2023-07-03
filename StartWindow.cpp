@@ -4,6 +4,7 @@
 #include "ui_startwindow.h"
 #include "Sudoku.h"
 
+
 StartWindow::StartWindow(QWidget *parent)
         : QMainWindow(parent),
           ui(new Ui::StartWindow)
@@ -11,7 +12,7 @@ StartWindow::StartWindow(QWidget *parent)
     ui->setupUi(this);
 
     ui->errorLabel->setStyleSheet("color: red");
-    connect(ui->startButton, &QPushButton::clicked, this, &StartWindow::on_Start_clicked);
+    connect(ui->startButton, &QPushButton::clicked, this, &StartWindow::startClicked);
 }
 
 StartWindow::~StartWindow()
@@ -20,7 +21,7 @@ StartWindow::~StartWindow()
 }
 
 
-    void StartWindow::on_Start_clicked()
+    void StartWindow::startClicked()
     {
         ui->errorLabel->clear();
         //Extrahiere die Größe des Sudokufelds
@@ -47,7 +48,7 @@ StartWindow::~StartWindow()
         int difficulty = ui->difficultyComboBox->currentIndex() + 1;
 
         //Sudoku-Fenster
-        Sudoku* sudoku = new Sudoku(size, difficulty, nameList, this);
+        Sudoku* sudoku = new Sudoku(size, difficulty, nameList, this, this);
         sudoku->move(pos());
         hide();
         sudoku->show();

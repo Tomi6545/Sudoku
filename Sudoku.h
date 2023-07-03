@@ -15,7 +15,7 @@ class Sudoku : public QMainWindow
 Q_OBJECT
 
 public:
-    explicit Sudoku(int size, int difficulty, QStringList nameList, StartWindow* startWindow, QWidget *parent = nullptr);
+    explicit Sudoku(int size, int difficulty, const QStringList& nameList, StartWindow* startWindow, QWidget *parent = nullptr);
     struct Player{
         QString name;
         int score;
@@ -25,12 +25,12 @@ public:
         int column;
         int block;
     };
+    void addPlayer(const QString& name);
 
 public slots:
-    void addPlayer(const QString& name);
     void onTableClicked(const QModelIndex &index);
     void keyPressEvent(QKeyEvent *event) override;
-    void on_Restart_clicked();
+    void restartClicked();
 
 private:
     StartWindow* startWindow;

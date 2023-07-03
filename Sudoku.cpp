@@ -7,19 +7,19 @@
 #include "set"
 #include <QKeyEvent>
 
-Sudoku::Sudoku(int size, int difficulty, QStringList nameList, StartWindow* startWindow, QWidget *parent) : QMainWindow(parent),
+Sudoku::Sudoku(int size, int difficulty, const QStringList& nameList, StartWindow* startWindow, QWidget *parent) : QMainWindow(parent),
                                                                   ui(new Ui::SudokuClass), size(size*size), difficulty(difficulty) {
     ui->setupUi(this);
 
     sudokuTable = ui->sudokuTable;
     playerTable = ui->playerTable;
+    this->startWindow = startWindow;
     int playerCount = nameList.length();
     int gridSize = this->gridSize();
 
 
     ui->restartButton->setVisible(false);
     ui->restartButton->setDisabled(true);
-    connect(ui->restartButton, &QPushButton::clicked, this, &Sudoku::on_Restart_clicked);
 
     QFont font;
     font.setPointSize(12);
@@ -45,7 +45,8 @@ Sudoku::Sudoku(int size, int difficulty, QStringList nameList, StartWindow* star
     double cellWidth =  ((double)sudokuTable->width()) / sudokuTable->rowCount();
     double cellHeight = ((double)sudokuTable->height()) / sudokuTable->columnCount();
     int lineSize = 3;
-    /* sudokuTable->horizontalHeader()->height() - 2.5 * lineSize -> verschieben in y damit richtig, da pos() nicht genau
+    /* Block Begrenzung hinzufügen
+     * sudokuTable->horizontalHeader()->height() - 2.5 * lineSize -> verschieben in y damit richtig, da pos() nicht genau
      * x * blockSize() * cellHeight -> verschiebung pro iteration
      */
     for(int x = 0; x < blockSize() + 1; x++) {
@@ -66,6 +67,7 @@ Sudoku::Sudoku(int size, int difficulty, QStringList nameList, StartWindow* star
     }
 
     QTableWidget::connect(sudokuTable, &QTableWidget::clicked, this, &Sudoku::onTableClicked);
+    QTableWidget::connect(ui->restartButton, &QPushButton::clicked, this, &Sudoku::restartClicked);
 
     // Schleife zur Initialisierung der Spieler in Playerlist
     for (int i = 0; i < playerCount; i++){
@@ -115,7 +117,7 @@ void Sudoku::handleTurn() {
         return;
     }
 
-    bool allowGuess = previousGuesses.find(guess) == previousGuesses.end();
+    bool allowGuess = players.size() == 1 || previousGuesses.find(guess) == previousGuesses.end();
     if(allowGuess) {
         fields.at(selectedField) = guess;
         previousGuesses.insert(guess);
@@ -131,7 +133,7 @@ void Sudoku::handleTurn() {
         //Score hinzufügen
         std::vector<char> allowed = getAllowedCharacters();
         long score = std::find(allowed.begin(), allowed.end(), guess) - allowed.begin() + 1;
-        players.at(currentPlayer).score += score;
+        players.at(currentPlayer).score += (int) score;
     }
     selectedField = -1;
     guess = ' ';
@@ -174,18 +176,6 @@ void Sudoku::addPlayer(const QString& name){
     playerTable->repaint();
 }
 
-int charToHexValue(char c) {
-    if (c >= 'A' && c <= 'Z') {
-        return c - 'A' + 10;
-    } else if (c >= 'a' && c <= 'z') {
-        return c - 'a' + 10;
-    } else if (c >= '1' && c <= '9') {
-        return c - '0';
-    } else {
-        return -1;
-    }
-}
-
 void Sudoku::updateScore(const std::vector<Player>& players, QTableWidget* playerTable) {
 
     for (int row = 0; row < players.size(); ++row) {
@@ -201,7 +191,6 @@ void Sudoku::updateVisual() {
     for(int i = 0; i < size; i++) {
         SudokuPos pos = this->getPos(i);
         char current = fields.at(i);
-        //TODO bessere umwandlung zu QString ?
         QTableWidgetItem *entry = sudokuTable->item(pos.row, pos.column);
         if(i == selectedField) {
             entry->setBackgroundColor(QColor(0, 102, 255));
@@ -223,7 +212,6 @@ void Sudoku::updateVisual() {
     ui->currentName->setText(playerList[currentPlayer].name);
     updateScore(players, playerTable);
 }
-
 
 
 void Sudoku::createSolution() {
@@ -399,7 +387,7 @@ int Sudoku::isOptimal(int pos, char guess) const {
     }
 }
 
-void Sudoku::on_Restart_clicked(){
+void Sudoku::restartClicked(){
     startWindow->show();
     close();
 }
