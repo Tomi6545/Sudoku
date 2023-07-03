@@ -45,15 +45,33 @@ Sudoku::Sudoku(int size, int difficulty, QStringList nameList, QWidget *parent) 
     sudokuTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     sudokuTable->setFocusPolicy(Qt::NoFocus);
     sudokuTable->setSelectionMode(QAbstractItemView::NoSelection);
+
     for(int i = 0; i < this->size; i++) {
         SudokuPos pos = getPos(i);
         sudokuTable->setItem(pos.row, pos.column, new QTableWidgetItem());
     }
-
-    //TODO Trennlinien dicker machen
-    QString styleSheet = QString("QHeaderView::section:nth-child(%1n) { border-width: 5px; }").arg(blockSize());
-    sudokuTable->horizontalHeader()->setStyleSheet(styleSheet);
-
+    double cellWidth =  ((double)sudokuTable->width()) / sudokuTable->rowCount();
+    double cellHeight = ((double)sudokuTable->height()) / sudokuTable->columnCount();
+    int lineSize = 3;
+    /* sudokuTable->horizontalHeader()->height() - 2.5 * lineSize -> verschieben in y damit richtig, da pos() nicht genau
+     * x * blockSize() * cellHeight -> verschiebung pro iteration
+     */
+    for(int x = 0; x < blockSize() + 1; x++) {
+        auto horizontalLineWidget = new QFrame;
+        horizontalLineWidget->setFrameShape(QFrame::HLine);
+        horizontalLineWidget->setParent(this);
+        horizontalLineWidget->setFixedSize(sudokuTable->width(),lineSize);
+        horizontalLineWidget->setLineWidth(lineSize);
+        horizontalLineWidget->move(sudokuTable->pos() + QPoint(0,sudokuTable->horizontalHeader()->height() - 2.5*lineSize + (x * blockSize() * cellHeight)));
+    }
+    for(int y = 0; y < blockSize() + 1; y++) {
+        auto verticalLineWidget = new QFrame;
+        verticalLineWidget->setFrameShape(QFrame::VLine);
+        verticalLineWidget->setParent(this);
+        verticalLineWidget->setFixedSize(lineSize,sudokuTable->height());
+        verticalLineWidget->setLineWidth(lineSize);
+        verticalLineWidget->move(sudokuTable->pos() + QPoint(y * blockSize() * cellWidth,  sudokuTable->horizontalHeader()->height() - 2.5 * lineSize));
+    }
 
     QTableWidget::connect(sudokuTable, &QTableWidget::clicked, this, &Sudoku::onTableClicked);
 
@@ -223,8 +241,8 @@ void Sudoku::createSolution() {
     }
 
     complete(1);
-    //difficulty 4 = Extreme (maximal mögliche Anzahl löschen)
-    int maxDelete = difficulty >= 4 ? size : (difficulty+1) * gridSize();
+    //nach difficulty lösungen löschen
+    int maxDelete = (difficulty+1) * gridSize();
     std::set<int> deleted;
     while(true) {
         int rnd = std::rand() % size;
