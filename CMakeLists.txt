@@ -15,3 +15,4 @@ set(CMAKE_AUTORCC ON)
 add_executable(Sudoku main.cpp Sudoku.cpp Sudoku.h startwindow.ui StartWindow.cpp StartWindow.h sudoku.ui fileManager.cpp fileManager.h)
 target_link_libraries(Sudoku PRIVATE Qt5::Core Qt5::Widgets)
 
+#Teilnehmer: 21caog1bif  21gath1bif
