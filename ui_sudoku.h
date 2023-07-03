@@ -18,6 +18,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTableWidget>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
@@ -32,6 +33,8 @@ public:
     QLabel *label;
     QLabel *currentName;
     QPushButton *restartButton;
+    QTextEdit *console;
+    QLabel *label_2;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -55,7 +58,7 @@ public:
         playerTable->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         playerTable->setObjectName(QString::fromUtf8("playerTable"));
         playerTable->setEnabled(true);
-        playerTable->setGeometry(QRect(900, 430, 211, 144));
+        playerTable->setGeometry(QRect(920, 200, 211, 144));
         playerTable->setFocusPolicy(Qt::NoFocus);
         playerTable->setLayoutDirection(Qt::LeftToRight);
         playerTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -83,7 +86,7 @@ public:
         sudokuTable->setShowGrid(true);
         label = new QLabel(centralWidget);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(870, 200, 281, 51));
+        label->setGeometry(QRect(890, 20, 281, 51));
         QFont font;
         font.setPointSize(20);
         label->setFont(font);
@@ -92,7 +95,7 @@ public:
         currentName = new QLabel(centralWidget);
         currentName->setObjectName(QString::fromUtf8("currentName"));
         currentName->setEnabled(true);
-        currentName->setGeometry(QRect(850, 240, 321, 101));
+        currentName->setGeometry(QRect(860, 60, 321, 101));
         QFont font1;
         font1.setPointSize(40);
         currentName->setFont(font1);
@@ -100,13 +103,29 @@ public:
         currentName->setAlignment(Qt::AlignCenter);
         restartButton = new QPushButton(centralWidget);
         restartButton->setObjectName(QString::fromUtf8("restartButton"));
-        restartButton->setGeometry(QRect(900, 650, 211, 51));
+        restartButton->setGeometry(QRect(920, 770, 211, 51));
+        console = new QTextEdit(centralWidget);
+        console->setObjectName(QString::fromUtf8("console"));
+        console->setGeometry(QRect(920, 470, 211, 261));
+        console->setReadOnly(true);
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setGeometry(QRect(920, 430, 211, 41));
+        QFont font2;
+        font2.setFamily(QString::fromUtf8("Sans"));
+        font2.setPointSize(20);
+        font2.setBold(false);
+        font2.setWeight(50);
+        label_2->setFont(font2);
+        label_2->setAlignment(Qt::AlignCenter);
         SudokuClass->setCentralWidget(centralWidget);
         sudokuTable->raise();
         playerTable->raise();
         label->raise();
         currentName->raise();
         restartButton->raise();
+        console->raise();
+        label_2->raise();
         menuBar = new QMenuBar(SudokuClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1370, 22));
@@ -133,6 +152,7 @@ public:
         label->setText(QApplication::translate("SudokuClass", "CURRENT PLAYER:", nullptr));
         currentName->setText(QString());
         restartButton->setText(QApplication::translate("SudokuClass", "RESTART", nullptr));
+        label_2->setText(QApplication::translate("SudokuClass", "CONSOLE", nullptr));
     } // retranslateUi
 
 };

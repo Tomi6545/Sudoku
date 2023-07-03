@@ -94,7 +94,7 @@ private:
     [[nodiscard]] int isOptimal(int pos, char guess) const;
 
     void updateScore(const std::vector<Player> &players, QTableWidget *playerTable);
-
+    void writeLine(const QString& text);
 
 };
 

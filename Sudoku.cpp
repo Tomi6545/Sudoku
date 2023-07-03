@@ -76,15 +76,25 @@ Sudoku::Sudoku(int size, int difficulty, const QStringList& nameList, StartWindo
         p.score = 0;
         players.push_back(p);
     }
+    std::shuffle(players.begin(), players.end(), std::mt19937(std::random_device()()));
 
     //Schleife zum Hinzufügen der Spieler in die playerTable
      for (int i = 0; i < playerCount; i++) {
-        QString playerName = nameList.value(i);
+        QString playerName = players.at(i).name;
         addPlayer(playerName);
     }
 
     //Initalisieren des Felds
     createSolution();
+
+    writeLine("HOW TO PLAY");
+    writeLine("Click on empty/red/yellow fields and type a character.");
+    writeLine("Characters should only occur once in every row/column/block (bold lines).");
+    writeLine("Correct guesses increase your score");
+    writeLine("---------------------------------");
+    if(playerList.size() > 1) {
+        writeLine(players[currentPlayer].name + "'s Turn");
+    }
 }
 
 void Sudoku::onTableClicked(const QModelIndex &index) {
@@ -107,6 +117,8 @@ void Sudoku::keyPressEvent(QKeyEvent *event) {
     std::vector<char> allowed = getAllowedCharacters();
     if(std::find(allowed.begin(), allowed.end(), c) != allowed.end()) {
         guess = c;
+    } else {
+        writeLine("Please type in a valid character [" + QString::fromStdString(std::string(1, allowed.front())) + "-" + QString::fromStdString(std::string(1, allowed.back()) + "]"));
     }
     this->handleTurn();
 }
@@ -117,7 +129,7 @@ void Sudoku::handleTurn() {
         return;
     }
 
-    bool allowGuess = players.size() == 1 || previousGuesses.find(guess) == previousGuesses.end();
+    bool allowGuess = playerList.size() == 1 || previousGuesses.find(guess) == previousGuesses.end();
     if(allowGuess) {
         fields.at(selectedField) = guess;
         previousGuesses.insert(guess);
@@ -129,11 +141,20 @@ void Sudoku::handleTurn() {
         //Spieler hat nicht die richtige Lösung gewählt, wechseln
         ++currentPlayer %= playerList.size();
         previousGuesses.clear();
+        if(allowGuess) {
+            writeLine("Incorrect guess");
+        } else {
+            writeLine("Already used the character in this turn");
+        }
+        if(playerList.size() > 1) {
+            writeLine(players[currentPlayer].name + "'s Turn");
+        }
     } else {
         //Score hinzufügen
         std::vector<char> allowed = getAllowedCharacters();
         long score = std::find(allowed.begin(), allowed.end(), guess) - allowed.begin() + 1;
         players.at(currentPlayer).score += (int) score;
+        writeLine("Correct guess [+" + QString::number(score) + "]");
     }
     selectedField = -1;
     guess = ' ';
@@ -146,12 +167,23 @@ void Sudoku::handleTurn() {
         }
     }
 
+    //Finde Gewinner, berücksichtige wer es vervollständigt hat falls Gleichstand
+    Player winner = players[currentPlayer];
+    for(int i = 0; i < players.size(); i++) {
+        if(i != currentPlayer && players.at(i).score > winner.score) {
+            winner = players.at(i);
+        }
+    }
+
+    writeLine(players[currentPlayer].name + " has won the game!");
+    writeLine("Click on Restart to start a new game");
     //Spiel zuende
     finished = true;
     for(int i = 0; i < this->size; i++) {
         SudokuPos pos = getPos(i);
         sudokuTable->item(pos.row, pos.column)->setBackgroundColor(QColor(154,	185, 115));
     }
+    ui->label->setText("WINNER:");
     ui->restartButton->setVisible(true);
     ui->restartButton->setDisabled(false);
 }
@@ -387,10 +419,16 @@ int Sudoku::isOptimal(int pos, char guess) const {
     }
 }
 
+void Sudoku::writeLine(const QString& text) {
+    ui->console->append(text);
+}
+
 void Sudoku::restartClicked(){
     startWindow->show();
     close();
 }
+
+
 
 
 
